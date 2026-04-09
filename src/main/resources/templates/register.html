@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>CampusBook — Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #05080f;
+    --surface: #0d1220;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --text: #e8f0fe;
+    --muted: #64748b;
+    --danger: #f43f5e;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 10%, rgba(124,58,237,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 20% 90%, rgba(0,212,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .wrap {
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    min-height: 580px;
+    position: relative;
+    z-index: 1;
+    margin: 24px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 80px rgba(124,58,237,0.06), 0 40px 100px rgba(0,0,0,0.6);
+  }
+
+  .panel-left {
+    flex: 1;
+    background: linear-gradient(135deg, #07040f 0%, #0d0a1f 100%);
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-left::after {
+    content: '';
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+  }
+
+  .logo-text span { color: var(--accent2); }
+
+  .hero-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .gradient {
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-text p { color: var(--muted); font-size: 15px; line-height: 1.7; max-width: 300px; }
+
+  .step-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  .step-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .panel-right {
+    flex: 0 0 440px;
+    background: var(--surface);
+    padding: 56px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .form-header { margin-bottom: 32px; }
+  .form-header h2 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .form-header p { color: var(--muted); font-size: 14px; }
+
+  .field { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  select {
+    width: 100%;
+    padding: 13px 16px;
+    background: #0d1a2d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+  }
+
+  select option { background: #0d1a2d; }
+
+  .role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .role-card {
+    position: relative;
+  }
+
+  .role-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+  }
+
+  .role-card label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 10px;
+    background: #0d1a2d;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .role-card input[type="radio"]:checked + label {
+    border-color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    color: var(--text);
+    box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+  }
+
+  .role-icon { font-size: 20px; }
+
+  .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--accent2), #6d28d9);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 8px;
+  }
+
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .form-footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .form-footer a { color: var(--accent2); text-decoration: none; font-weight: 500; }
+
+  @media (max-width: 768px) {
+    .panel-left { display: none; }
+    .panel-right { flex: 1; }
+    .wrap { margin: 16px; border-radius: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<div class="wrap">
+  <div class="panel-left">
+    <div class="logo">
+      <div class="logo-icon">🏛️</div>
+      <div class="logo-text">Campus<span>Book</span></div>
+    </div>
+
+    <div class="hero-text">
+      <h1>Join the<br><span class="gradient">Smart Campus</span><br>Network</h1>
+      <p>Manage bookings, track resources, and collaborate across departments seamlessly.</p>
+    </div>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Create your account with college email</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Browse available labs, rooms & auditoriums</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Book instantly with conflict auto-resolution</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-right">
+    <div class="form-header">
+      <h2>Create account</h2>
+      <p>Get started in less than a minute</p>
+    </div>
+
+    <form action="/register" method="post">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Your full name" required>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" name="email" placeholder="you@campus.edu" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Create a strong password" required>
+      </div>
+      <div class="field">
+        <label>I am a</label>
+        <div class="role-grid">
+          <div class="role-card">
+            <input type="radio" name="role" id="role-student" value="STUDENT" checked>
+            <label for="role-student">
+              <span class="role-icon">🎓</span>
+              Student
+            </label>
+          </div>
+          <div class="role-card">
+            <input type="radio" name="role" id="role-faculty" value="FACULTY">
+            <label for="role-faculty">
+              <span class="role-icon">👨‍🏫</span>
+              Faculty
+            </label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary">Create Account →</button>
+    </form>
+
+    <div class="form-footer">
+      Already registered? <a href="/">Sign in</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

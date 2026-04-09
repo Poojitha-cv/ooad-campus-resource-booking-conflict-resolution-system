@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>CampusBook — Booking Confirmed!</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #05080f;
+    --surface: #0d1220;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --text: #e8f0fe;
+    --muted: #64748b;
+    --success: #10b981;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(16,185,129,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* Animated ring */
+  .success-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 40px;
+  }
+
+  .ring-outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(16,185,129,0.2);
+    animation: ripple 2s ease-out infinite;
+  }
+
+  .ring-inner {
+    position: absolute;
+    inset: 16px;
+    border-radius: 50%;
+    background: rgba(16,185,129,0.1);
+    border: 2px solid rgba(16,185,129,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-icon {
+    font-size: 40px;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+
+  @keyframes ripple {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .content {
+    text-align: center;
+    max-width: 480px;
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.5s ease both;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin-bottom: 12px;
+  }
+
+  h1 span {
+    background: linear-gradient(90deg, var(--success), #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+
+  .confirm-card {
+    background: var(--surface);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    text-align: left;
+    box-shadow: 0 0 40px rgba(16,185,129,0.05);
+  }
+
+  .confirm-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .confirm-msg {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--success);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+
+  .confirm-note {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--success), #059669);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-ghost {
+    padding: 14px 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="success-ring">
+  <div class="ring-outer"></div>
+  <div class="ring-inner">
+    <span class="check-icon">✅</span>
+  </div>
+</div>
+
+<div class="content">
+  <h1>Booking <span>Confirmed!</span></h1>
+  <p class="subtitle">Your resource has been reserved successfully. You're all set.</p>
+
+  <div class="confirm-card">
+    <div class="confirm-label">Confirmation Status</div>
+    <div class="confirm-msg" th:text="${message}">Booking Confirmed!</div>
+
+    <div class="divider"></div>
+
+    <div class="confirm-note">
+      <span>ℹ️</span>
+      <span>Your booking has been saved. If any overlap is found with future bookings, FCFS resolution will apply automatically.</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a href="/resource/all" class="btn-primary">Browse More Resources</a>
+    <a href="/" class="btn-ghost">Back to Home</a>
+  </div>
+</div>
+
+</body>
+</html>

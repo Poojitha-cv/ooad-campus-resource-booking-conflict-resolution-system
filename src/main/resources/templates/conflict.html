@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>CampusBook — Conflict Detected</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #05080f;
+    --surface: #0d1220;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --text: #e8f0fe;
+    --muted: #64748b;
+    --danger: #f43f5e;
+    --warning: #f59e0b;
+    --success: #10b981;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 50% at 50% 20%, rgba(244,63,94,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(5,8,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; color: var(--text);
+  }
+
+  .nav-logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+
+  .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; }
+  .nav-brand span { color: var(--accent); }
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 56px 32px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Alert header */
+  .alert-header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: slideDown 0.4s ease both;
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(244,63,94,0.1);
+    border: 1px solid rgba(244,63,94,0.25);
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--danger);
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+
+  .alert-header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin-bottom: 10px;
+  }
+
+  .alert-header p { color: var(--muted); font-size: 15px; }
+
+  /* VS comparison */
+  .versus-wrap {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 36px;
+    animation: fadeIn 0.5s ease both;
+    animation-delay: 0.15s;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .booking-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .booking-card.existing { border-color: rgba(245,158,11,0.3); }
+  .booking-card.new { border-color: rgba(0,212,255,0.2); }
+
+  .booking-card.winner {
+    border-color: var(--success) !important;
+    box-shadow: 0 0 30px rgba(16,185,129,0.1);
+  }
+
+  .booking-card.loser {
+    opacity: 0.6;
+  }
+
+  .card-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .label-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .existing .label-dot { background: var(--warning); }
+  .new .label-dot { background: var(--accent); }
+
+  .time-block {
+    margin-bottom: 14px;
+  }
+
+  .time-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .time-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-top: 12px;
+  }
+
+  .status-conflict { background: rgba(244,63,94,0.12); color: var(--danger); border: 1px solid rgba(244,63,94,0.2); }
+  .status-confirmed { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+
+  .winner-crown {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  /* VS badge */
+  .vs-badge {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(244,63,94,0.1);
+    border: 2px solid rgba(244,63,94,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--danger);
+    flex-shrink: 0;
+  }
+
+  /* Result card */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeIn 0.5s ease both;
+    animation-delay: 0.3s;
+  }
+
+  .result-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .result-verdict {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+  }
+
+  .verdict-existing { color: var(--warning); }
+  .verdict-new { color: var(--accent); }
+
+  .result-explain {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0 auto 24px;
+  }
+
+  .fcfs-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: rgba(124,58,237,0.08);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    color: #a78bfa;
+    font-weight: 500;
+  }
+
+  /* Actions */
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, var(--accent), #0099cc);
+    border: none;
+    border-radius: 10px;
+    color: #05080f;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-ghost {
+    padding: 14px 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 20px; }
+    main { padding: 32px 20px; }
+    .versus-wrap { grid-template-columns: 1fr; }
+    .vs-badge { margin: 0 auto; }
+    .alert-header h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="/resource/all">
+    <div class="nav-logo-icon">🏛️</div>
+    <div class="nav-brand">Campus<span>Book</span></div>
+  </a>
+</nav>
+
+<main>
+
+  <div class="alert-header">
+    <div class="alert-badge">⚠️ Booking Conflict Detected</div>
+    <h1>Time Slot Unavailable</h1>
+    <p>Your requested slot overlaps an existing booking. FCFS resolution applied.</p>
+  </div>
+
+  <!-- Side-by-side comparison -->
+  <div class="versus-wrap">
+
+    <!-- Existing booking -->
+    <div class="booking-card existing"
+      th:classappend="${conflict.winner == 'EXISTING BOOKING WINS'} ? 'winner' : 'loser'">
+
+      <div class="winner-crown"
+        th:if="${conflict.winner == 'EXISTING BOOKING WINS'}">🏆 WINS</div>
+
+      <div class="card-label">
+        <div class="label-dot"></div>
+        Existing Booking
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">Start Time</div>
+        <div class="time-val" th:text="${conflict.existingBooking.startTime}">—</div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">End Time</div>
+        <div class="time-val" th:text="${conflict.existingBooking.endTime}">—</div>
+      </div>
+
+      <span class="status-pill status-confirmed">Confirmed</span>
+    </div>
+
+    <!-- VS -->
+    <div class="vs-badge">VS</div>
+
+    <!-- New booking -->
+    <div class="booking-card new"
+      th:classappend="${conflict.winner == 'NEW BOOKING WINS'} ? 'winner' : 'loser'">
+
+      <div class="winner-crown"
+        th:if="${conflict.winner == 'NEW BOOKING WINS'}">🏆 WINS</div>
+
+      <div class="card-label">
+        <div class="label-dot"></div>
+        Your Booking
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">Start Time</div>
+        <div class="time-val" th:text="${conflict.newBooking.startTime}">—</div>
+      </div>
+
+      <div class="time-block">
+        <div class="time-label">End Time</div>
+        <div class="time-val" th:text="${conflict.newBooking.endTime}">—</div>
+      </div>
+
+      <span class="status-pill status-conflict">Conflict</span>
+    </div>
+
+  </div>
+
+  <!-- Verdict -->
+  <div class="result-card">
+    <div class="result-label">FCFS Resolution Result</div>
+
+    <div class="result-verdict"
+      th:classappend="${conflict.winner == 'EXISTING BOOKING WINS'} ? 'verdict-existing' : 'verdict-new'"
+      th:text="${conflict.winner}">VERDICT</div>
+
+    <p class="result-explain"
+      th:if="${conflict.winner == 'EXISTING BOOKING WINS'}">
+      The existing booking was made earlier. Under First Come, First Served policy, it retains the slot. Please choose a different time window.
+    </p>
+
+    <p class="result-explain"
+      th:if="${conflict.winner == 'NEW BOOKING WINS'}">
+      Your booking was processed first in the system. Under FCFS policy, your slot takes priority. The conflicting booking has been flagged.
+    </p>
+
+    <div class="fcfs-badge">⚡ First Come, First Served (FCFS) Algorithm</div>
+  </div>
+
+  <div class="actions">
+    <a href="/resource/all" class="btn-primary">Try Another Slot →</a>
+    <a href="/resource/all" class="btn-ghost">Back to Resources</a>
+  </div>
+
+</main>
+</body>
+</html>
